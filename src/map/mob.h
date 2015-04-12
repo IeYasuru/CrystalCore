@@ -51,6 +51,8 @@
 // Disable this to make monsters not do any path search when looking for a target (old behavior).
 #define ACTIVEPATHSEARCH
 
+//#define INSTANCE_LOOT
+
 //Mob skill states.
 enum MobSkillState {
 	MSS_ANY = -1,

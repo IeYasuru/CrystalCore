@@ -4129,14 +4129,11 @@ int npc_parsesrcfile(const char* filepath, bool runOnInit) {
 	for( p = script->skip_space(buffer); p && *p ; p = script->skip_space(p) ) {
 		int pos[9];
 		char w1[2048], w2[2048], w3[2048], w4[2048];
-		int i, count, new_count;
+		int i, count;
 		lines++;
 
 		// w1<TAB>w2<TAB>w3<TAB>w4
-		//new_count = sv->parse(p, (int)(len + buffer - p), 0, '`', pos, ARRAYLENGTH(pos), (e_svopt)(SV_TERMINATE_LF | SV_TERMINATE_CRLF));
 		count = sv->parse(p, (int)(len + buffer - p), 0, '\t', pos, ARRAYLENGTH(pos), (e_svopt)(SV_TERMINATE_LF | SV_TERMINATE_CRLF));
-		//if (new_count == 3 && count < 3)
-			//count = 3;
 
 		if( count < 0 )
 		{

@@ -10437,6 +10437,8 @@ BUILDIN(delayannounce)
 		if (attachRid)
 			script_pushint(st, (map->id2sd(st->rid) != NULL));
 	}
+
+	return true;
 }
 
 /*==========================================
