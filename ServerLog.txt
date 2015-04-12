@@ -208,3 +208,7 @@
 4/11/2015 6:45:42 PM	map-server.exe started.
 4/11/2015 6:46:05 PM	map-server.exe shutdown.
 4/11/2015 6:57:18 PM	map-server.exe started.
+4/12/2015 2:43:06 PM	map-server.exe shutdown.
+4/12/2015 2:44:02 PM	map-server.exe started.
+4/12/2015 5:19:41 PM	map-server.exe shutdown.
+4/12/2015 5:19:51 PM	map-server.exe started.

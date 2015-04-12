@@ -10378,31 +10378,53 @@ BUILDIN(delayannounce)
 	const char *mes       = script_getstr(st, 2);
 	int         flag      = script_getnum(st, 3);
 	int         ticks     = script_getnum(st, 4);
-	int         attachRid = script_getnum(st, 5);
-	const char *mapname   = script_hasdata(st, 6) ? script_getstr(st, 6) : NULL;
-	const char *fontColor = script_hasdata(st, 7) ? script_getstr(st, 7) : NULL;
-	int         fontType  = script_hasdata(st, 8) ? script_getnum(st, 8) : 0x190;
-	int         fontSize  = script_hasdata(st, 9) ? script_getnum(st, 9) : 12;
-	int         fontAlign = script_hasdata(st, 10) ? script_getnum(st, 10) : 0;
-	int         fontY     = script_hasdata(st, 11) ? script_getnum(st, 11) : 0;
+	int         post      = script_hasdata(st, 5) ? script_getnum(st, 5) : 1;
+	int         attachRid = script_hasdata(st, 6) ? script_getnum(st, 6) : 0;
+	const char *mapname   = script_hasdata(st, 7) ? script_getstr(st, 7) : NULL;
+	const char *fontColor = script_hasdata(st, 8) ? script_getstr(st, 8) : NULL;
+	int         fontType  = script_hasdata(st, 9) ? script_getnum(st, 9) : 0x190;
+	int         fontSize  = script_hasdata(st, 10) ? script_getnum(st, 10) : 12;
+	int         fontAlign = script_hasdata(st, 11) ? script_getnum(st, 11) : 0;
+	int         fontY     = script_hasdata(st, 12) ? script_getnum(st, 12) : 0;
 	int         m;
+
+	if (!post) {
+		if (!attachRid)
+			script->detach_rid(st);
+
+		if (ticks <= 0) {// do nothing
+			if (attachRid)
+				script_pushint(st, (map->id2sd(st->rid) != NULL));
+		}
+		else if (st->sleep.tick == 0) {// sleep for the target amount of time
+			st->state = STOP;
+			st->sleep.tick = ticks;
+		}
+		else {// sleep time is over
+			st->state = RUN;
+			st->sleep.tick = 0;
+			if (attachRid)
+				script_pushint(st, (map->id2sd(st->rid) != NULL));
+		}
+	}
 
 	if (mapname) {
 		if ((m = map->mapname2mapid(mapname)) < 0)
 			return true;
 
 		map->foreachinmap(script->buildin_announce_sub, m, BL_PC, mes, strlen(mes) + 1, flag&BC_COLOR_MASK, fontColor, fontType, fontSize, fontAlign, fontY);
-	} else if (flag&(BC_TARGET_MASK | BC_SOURCE_MASK)) {
+	}
+	else if (flag&(BC_TARGET_MASK | BC_SOURCE_MASK)) {
 		send_target target;
 		struct block_list *bl = (flag&BC_NPC) ? map->id2bl(st->oid) : (struct block_list *)script->rid2sd(st);
 		if (bl == NULL)
 			return true;
 
 		switch (flag&BC_TARGET_MASK) {
-		case BC_MAP:  target = ALL_SAMEMAP;	break;
-		case BC_AREA: target = AREA;		break;
-		case BC_SELF: target = SELF;		break;
-		default:      target = ALL_CLIENT;	break;
+			case BC_MAP:  target = ALL_SAMEMAP;	break;
+			case BC_AREA: target = AREA;		break;
+			case BC_SELF: target = SELF;		break;
+			default:      target = ALL_CLIENT;	break;
 		}
 
 		if (fontColor)
@@ -10417,21 +10439,21 @@ BUILDIN(delayannounce)
 			intif->broadcast(mes, (int)strlen(mes) + 1, flag&BC_COLOR_MASK);
 	}
 
+	if (!post)
+		return true;
+
 	if (!attachRid)
 		script->detach_rid(st);
 
-	if (ticks <= 0)
-	{// do nothing
+	if (ticks <= 0) {// do nothing
 		if (attachRid)
 			script_pushint(st, (map->id2sd(st->rid) != NULL));
 	}
-	else if (st->sleep.tick == 0)
-	{// sleep for the target amount of time
+	else if (st->sleep.tick == 0) {// sleep for the target amount of time
 		st->state = STOP;
 		st->sleep.tick = ticks;
 	}
-	else
-	{// sleep time is over
+	else {// sleep time is over
 		st->state = RUN;
 		st->sleep.tick = 0;
 		if (attachRid)
@@ -20016,7 +20038,7 @@ void script_parse_builtin(void) {
 		BUILDIN_DEF(announce,"si?????"),
 		BUILDIN_DEF(mapannounce,"ssi?????"),
 		BUILDIN_DEF(areaannounce,"siiiisi?????"),
-		BUILDIN_DEF(delayannounce, "siii??????"),
+		BUILDIN_DEF(delayannounce, "sii????????"),
 		BUILDIN_DEF(getusers,"i"),
 		BUILDIN_DEF(getmapguildusers,"si"),
 		BUILDIN_DEF(getmapusers,"s"),

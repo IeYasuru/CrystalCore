@@ -6,7 +6,7 @@
 	None
 =*/
 
-prontera,162,184,4	script	Party Board::pboard	837,{
+prontera,164,175,4	script	Party Board#prontera::pboard	837,{
 
 	function get_char_name {
 		.@pos = strpos(getarg(0),"[");
@@ -37,7 +37,6 @@ prontera,162,184,4	script	Party Board::pboard	837,{
 	}
 	
 	mes .npc$;
-	parse_party_list(0);
 	mes "Welcome, "+ strcharinfo(0) +", to the Party Board Service provided to you by the Crystal Core Group.";
 	if(@PB_Registered) {
 		next;
@@ -80,7 +79,6 @@ PB_LFP:
 		case 1:
 			$@PB_PartyBoard$[getarraysize($@PB_PartyBoard$)] = "^0000FF"+ strcharinfo(0) +"^000000 [^FF0000"+ jobname(Class) +"^000000 ^FF0000Lv.^000000 "+ BaseLevel +"/"+ JobLevel +"]";
 			@PB_Registered = 1;
-			parse_party_list(0);
 			mes "I've added you to the list. Once someone selects you, I will forward you a party invitatiion on their behalf.";
 			mes "Have a great day.";
 			close;
@@ -94,6 +92,16 @@ PB_LFP:
 PB_LFM:
 	next;
 	mes .npc$;
+	getpartymember,getcharid(1);
+	deletearray $@partymembername;
+	deletearray $@partymembercid;
+	deletearray $@partymemberaid;
+	if($@partymembercount >= $@Max_Party_Size) {
+		$@partymembercount = 0;
+		mes "You already have the maximum number of players in your party!";
+		mes "Please remove somebody before trying to look for new players!";
+		close;
+	}
 	mes "Would you like to look through the listing for players currently looking to join a party?";
 	switch(select("Yes:No")) {
 		case 1:
@@ -112,7 +120,6 @@ PB_LFM:
 				mes "I'm sorry, but you are not the leader of your party. Please have your party leader speak to me to look for new party members.";
 				close;
 			}
-			parse_party_list(0);
 			next;
 			mes .npc$;
 			if(!getarraysize($@PB_PartyBoard$)) {
@@ -124,7 +131,7 @@ PB_LFM:
 			mes "These are the players currently interested in joining a party.";
 			switch(select(implode($@PB_PartyBoard$,":"))) {
 				default:
-					mes "Your choise was: ^0000FF"+ get_char_name($@PB_PartyBoard$[@menu-1]);
+					mes "Your choice was: ^0000FF"+ get_char_name($@PB_PartyBoard$[@menu-1]);
 					mes "^000000";
 					mes "Is this correct?";
 					switch(select("Yes:No")) {
@@ -134,14 +141,19 @@ PB_LFM:
 							.@curPlName$ = strcharinfo(0);
 							.@curPlLv = BaseLevel;
 							getmapxy(.@m$,.@x,.@y,0);
-							next;
+							//next;	//Changed to close2 because leader will get locked in place if invitee is afk 
+							close2;
 							.@charName$ = strip_color_code(get_char_name($@PB_PartyBoard$[@menu-1]));
 							detachrid;
 							if(!attachrid(getcharid(3,.@charName$))) {
 								if(!attachrid(.@curPl))
 									end;
 								mes .npc$;
-								mes "I'm sorry, it seems that player is no longer online.";
+								if(!getstrlen(.@charName$)) {
+									mes "I'm sorry, that character has either joined another party or withdrew their registration.";
+								} else {
+									mes "I'm sorry, it seems that player is no longer online.";
+								}
 								mes "Would you like to try again?";
 								switch(select("Yes:No")) {
 									case 1:
@@ -153,9 +165,9 @@ PB_LFM:
 							}
 							mes .npc$;
 							mes "You've been invited to join a party!";
-							mes "Party Leader: "+ .@curPlName$;
-							mes "Party Leader Lv.: "+ .@curPlLv;
-							mes " ";
+							mes "Party Leader: ^0000FF"+ .@curPlName$;
+							mes "^000000Party Leader Lv.: ^00FF00"+ .@curPlLv;
+							mes "^000000";
 							mes "Would you like to warp to ^FF0000"+ .@m$ +"^000000 to meet the party leader?";
 							switch(select("Yes:No")) {
 								case 1:
@@ -173,9 +185,9 @@ PB_LFM:
 								end;
 							mes .npc$;
 							if(.@invited) {
+								warp .@m$,.@x,.@y;
 								mes "Your new party should appear approximately 2 cells left and down from your current positon.";
 								mes "Have a nice day and thank you for using the Party Board serviced provided to you by Crystal Core Group.";
-								parse_party_list(0);
 								close;
 							}
 							mes "The player has declined your invitation and decided not to join your party.";
@@ -203,6 +215,7 @@ OnInit:
 	.Menu_Ops$[0] = "Looking for Party (LFP)";
 	.Menu_Ops$[1] = "Looking for Member (LFM)";
 	$@PB_PartyBoard$[0] = "";
+	$@Max_Party_Size = 12;
 	initnpctimer;
 	end;
 	
@@ -213,3 +226,32 @@ OnTimer1000:
 	setnpctimer 0;
 	end;
 }
+
+morocc,171,102,4	duplicate(pboard)	Party Board#morocc	837
+geffen,136,55,4	duplicate(pboard)	Party Board#geffen	837
+payon,164,99,6	duplicate(pboard)	Party Board#payon	837
+aldebaran,135,117,6	duplicate(pboard)	Party Board#alde	837
+izlude,119,127,6	duplicate(pboard)	Party Board#izlude	837
+alberta,125,72,4	duplicate(pboard)	Party Board#alberta	837
+xmas,164,143,4	duplicate(pboard)	Party Board#lutie	837
+comodo,203,157,5	duplicate(pboard)	Party Board#comodo	837
+yuno,172,85,4	duplicate(pboard)	Party Board#yuno	837
+amatsu,209,81,3	duplicate(pboard)	Party Board#amatsu	837
+gonryun,166,118,4	duplicate(pboard)	Party Board#gonryun	837
+umbala,102,168,4	duplicate(pboard)	Party Board#umbala	837
+niflheim,186,178,0	duplicate(pboard)	Party Board#niflheim	837
+louyang,227,104,4	duplicate(pboard)	Party Board#louyang	837
+jawaii,244,144,5	duplicate(pboard)	Party Board#jawaii	837
+ayothaya,212,178,6	duplicate(pboard)	Party Board#ayothaya	837
+einbroch,53,203,6	duplicate(pboard)	Party Board#einbroch	837
+lighthalzen,166,106,4	duplicate(pboard)	Party Board#light	837
+einbech,165,130,7	duplicate(pboard)	Party Board#einbech	837
+hugel,99,168,5	duplicate(pboard)	Party Board#hugel	837
+rachel,124,116,6	duplicate(pboard)	Party Board#rachel	837
+veins,210,121,7	duplicate(pboard)	Party Board#veins	837
+moscovia,218,191,6	duplicate(pboard)	Party Board#mosc	837
+// mid_camp,202,236,4	duplicate(pboard)	Party Board#camp	837
+// manuk,294,145,4	duplicate(pboard)	Party Board#manuk	837
+// splendide,181,144,7	duplicate(pboard)	Party Board#splend	837
+brasilis,180,122,6	duplicate(pboard)	Party Board#brasilis	837
+dicastes01,201,194,4	duplicate(pboard)	Party Board#dicaste	837
