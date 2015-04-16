@@ -92,7 +92,7 @@ PB_LFP:
 PB_LFM:
 	next;
 	mes .npc$;
-	getpartymember,getcharid(1);
+	getpartymember getcharid(1);
 	deletearray $@partymembername;
 	deletearray $@partymembercid;
 	deletearray $@partymemberaid;

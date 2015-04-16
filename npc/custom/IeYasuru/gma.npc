@@ -1,0 +1,51 @@
+/*= GM Assistant =*/
+/*= Coded by: IeYasuru =*/
+/*= Date: April 15, 2015 =*/
+/*= Revision: 3 =*/
+/*= External Functions:
+	None;
+=*/
+
+-	script	GM Assistant	-1,{
+
+	function disp_gm_list;
+	
+	mes .npc$;
+	disp_gm_list;
+	if(select(implode($@gm_assist_pl$,":") +":Close")
+		== getarraysize($@gm_assist_pl$))
+		close;
+	callfunc(getd("GMA_Pl" + $@gm_assist_pl$[@menu-1]));
+	end;
+	
+	function disp_gm_list {
+		if(!(.@r = query_sql("select login.account_id,`char`.name,`char`.online,login.group_id from `char` inner join login on `char`.account_id = login.account_id where login.group_id >= "+ .MinGM +" order by login.account_id,`char`.char_id asc",.@aid,.@name$,.@online,.@gid))) {
+			mes "There was a problem fetching GMs from the database. Please report this.";
+			if(!$@debug_logged) {
+				debugmes "Could not pull GMs from database!\nNPC: GM Assistant | Where: \'disp_gm_list\'";
+				$@debug_logged = 1;
+			}
+			close;
+		}
+		mes "^FF0000Administrators^000000";
+		callsub parsegm;
+		mes "^0000FFGame Masters^000000";
+		callsub parsegm;
+		mes "^00FF00Sub GMs^000000";
+		callsub parsegm;
+		return;
+		
+	parsegm:
+		for(.@i = 0; .@i < getarraysize(.@aid); .@i++) {
+			
+		}
+	}
+	
+OnInit:
+	.npc$ = "[Administrative Assistant]";
+	$@gm_assist_pl$[0] = "";
+	.MinGM = 80;
+	.Online$ = "^00FF00Online^000000";
+	.Offline$ = "^FF0000Offline^000000";
+	end;
+}
