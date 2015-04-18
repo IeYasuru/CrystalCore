@@ -208,7 +208,7 @@ OnInit:
 	set .off$,"^FF0000Off^000000";
 	set .MinGM,60;
 	setarray .PlayerMenu$[0],"Adjust logon settings","Submit a support ticket";
-	setarray .GMMenu$[0],"Adjust GM logon settings","View support tickets","GM News","Reload GM Handler settings";
+	setarray .GMMenu$[0],"Adjust GM logon settings","View support tickets","GM News","Reload GM Handler settings","Grant GM";
 	setarray .GMAUTO$[0],"@hide","@speed 0","@warp","@who3";
 	setarray .PLAUTO$[0],"@main on","@autoloot","@showexp";
 	end;

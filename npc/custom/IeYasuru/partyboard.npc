@@ -10,19 +10,12 @@ prontera,164,175,4	script	Party Board#prontera::pboard	837,{
 
 	function get_char_name {
 		.@pos = strpos(getarg(0),"[");
-		//mes ".@pos: "+ .@pos;
-		.@charName$ = substr(getarg(0),0,.@pos-2);
-		//mes ".@charName$: "+ .@charName$;
+		.@charName$ = substr(getarg(0),7,.@pos-9);
 		return .@charName$;
-	}
-	function strip_color_code {
-		return substr(getarg(0),7,getstrlen(getarg(0))-8);
 	}
 	function parse_party_list {
 		for(.@i = 0; .@i < getarraysize($@PB_PartyBoard$); .@i++) {
 			.@name$ = get_char_name($@PB_PartyBoard$[.@i]);
-			.@name$ = strip_color_code(.@name$);
-			//mes ".@name$: "+ .@name$;
 			if(getarg(0)) {
 				if(.@name$ == strcharinfo(0)) {
 					deletearray $@PB_PartyBoard$[.@i],1;
@@ -141,9 +134,8 @@ PB_LFM:
 							.@curPlName$ = strcharinfo(0);
 							.@curPlLv = BaseLevel;
 							getmapxy(.@m$,.@x,.@y,0);
-							//next;	//Changed to close2 because leader will get locked in place if invitee is afk 
 							close2;
-							.@charName$ = strip_color_code(get_char_name($@PB_PartyBoard$[@menu-1]));
+							.@charName$ = get_char_name($@PB_PartyBoard$[@menu-1]);
 							detachrid;
 							if(!attachrid(getcharid(3,.@charName$))) {
 								if(!attachrid(.@curPl))

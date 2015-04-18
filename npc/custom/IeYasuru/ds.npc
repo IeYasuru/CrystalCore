@@ -161,7 +161,7 @@ OnBeginRound:
 DS_GetRoundMobs:
 	while(getarraysize($@RoundMobs) < 5)
 	{
-		set .@mob, getd("$@DS" + $@DS_Round + "[" + rand(getarraysize(getd("$@DS" + $@DS_Round))) + "]");
+		.@mob = getd("$@DS" + $@DS_Round + "[" + rand(getarraysize(getd("$@DS" + $@DS_Round))) + "]");
 		if(DS_CheckDup(.@mob)) 
 			continue;
 		$@RoundMobs[getarraysize($@RoundMobs)] = @mob;

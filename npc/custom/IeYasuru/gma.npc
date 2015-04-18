@@ -3,23 +3,49 @@
 /*= Date: April 15, 2015 =*/
 /*= Revision: 3 =*/
 /*= External Functions:
-	None;
+	[GM] Reload: GMA_Pl_Reload - Plug-in Function: Gives any GM over .MinGM level to reload settings/plug-ins
+	[Pl] AutoLogon: GMA_Pl_AutoLogon - Plug-in Function: Lets players set auto-activating commands upon login, such as @main, @showexp, @showzeny, and @autoloot
 =*/
 
--	script	GM Assistant	-1,{
+prontera,162,185,4	script	GM Assistant::gma	971,{
 
+	function mad;
 	function disp_gm_list;
+	function gidtostr;
 	
+	if(!getstrlen(.npc$))	// Check OnInit was run. If not, '.npc$' will be empty
+		donpcevent "gma::OnInit";
+		
 	mes .npc$;
-	disp_gm_list;
-	if(select(implode($@gm_assist_pl$,":") +":Close")
-		== getarraysize($@gm_assist_pl$))
+	disp_gm_list;	// Default functionality of NPC: dynamic list of all GMs in format '[<GM position>] <name> - <online status>"
+	if(getgmlevel() >= .MinGM) // Determine if invoking player is Head GM or Admin. If so, use GM plug-ins, othewise user Player plug-ins
+		.@sel = select(implode($@gma_gm_menu$,":") +":Close")-1;
+	else
+		.@sel = select(implode($@gma_pl_menu$,":") +":Close")-1;
+	.@func$ = "GMA_Pl_"+ getd("$@gma_"+ ((getgmlevel()) ? "gm" : "pl") +"$["+ .@sel +"]");
+	if(.@sel == getarraysize(getd("$@gma_"+ ((getgmlevel()) ? "gm$" : "pl$"))))
 		close;
-	callfunc(getd("GMA_Pl" + $@gm_assist_pl$[@menu-1]));
-	end;
-	
+	if(is_function(.@func$))
+		callfunc(.@func$);
+	else {
+		next;
+		mes .npc$;
+		mes "I'm sorry,  that feature doesn't exist yet. Please report this to a GM.";
+		close;
+	}
+	if(playerattached())
+		close;
+	else
+		end;
+		
+	function mad  {
+		for(.@i = 0; .@i<getargcount(); .@i++)
+			deletearray getd(getarg(.@i));
+		return;
+	}
 	function disp_gm_list {
-		if(!(.@r = query_sql("select login.account_id,`char`.name,`char`.online,login.group_id from `char` inner join login on `char`.account_id = login.account_id where login.group_id >= "+ .MinGM +" order by login.account_id,`char`.char_id asc",.@aid,.@name$,.@online,.@gid))) {
+		mad(".aid",".name$","online",".gid");
+		if(!(query_sql("select login.account_id,`char`.name,`char`.online,login.group_id from `char` inner join login on `char`.account_id = login.account_id where login.group_id >= "+ .MinGM +" order by login.account_id,`char`.char_id asc",.aid,.name$,.online,.gid))) {
 			mes "There was a problem fetching GMs from the database. Please report this.";
 			if(!$@debug_logged) {
 				debugmes "Could not pull GMs from database!\nNPC: GM Assistant | Where: \'disp_gm_list\'";
@@ -27,25 +53,38 @@
 			}
 			close;
 		}
-		mes "^FF0000Administrators^000000";
-		callsub parsegm;
-		mes "^0000FFGame Masters^000000";
-		callsub parsegm;
-		mes "^00FF00Sub GMs^000000";
-		callsub parsegm;
+		mad(".gm$",".gmo",".gml");
+		for(.@i = 0; .@i < getarraysize(.aid); .@i++) {
+			if(.@last == .aid[.@i])
+				continue;
+			.gm$[.@i] = .name$[.@i];
+			.gmo[.@i] = .online[.@i];
+			.gml[.@i] = .gid[.@i];
+			.@last = .aid[.@i];
+		}
+		for(.@i = 0; .@i < getarraysize(.gm$); .@i++)
+			mes gidtostr(.gml[.@i]) +": "+ .gm$[.@i] +" - "+ ((.gmo[.@i]) ? .Online$ : .Offline$);
 		return;
-		
-	parsegm:
-		for(.@i = 0; .@i < getarraysize(.@aid); .@i++) {
-			
+	}
+	function gidtostr {
+		switch(getarg(0)) {
+			case 99: return "[^FF0000Admin^000000]";
+			case 80: return "[^FF00FFHead GM^000000]";
+			case 60: return "[^0000FFGM^000000]";
+			case 40: return "[^00FF00Sub GM^000000]";
+			default: return "[Unknown Group ID]";
 		}
 	}
 	
 OnInit:
 	.npc$ = "[Administrative Assistant]";
-	$@gm_assist_pl$[0] = "";
-	.MinGM = 80;
+	mad("$@gma_pl$","$@gma_gm$","$@gma_gm_menu$","$@gma_pl_menu$");	// Explicitly clear out arrays to make sure all plug-ins are loaded fresh.
+	donpcevent "::OnLoadPlugin";
+	.MinGM = 80; // Minimum GM level to access GM plug-ins
 	.Online$ = "^00FF00Online^000000";
 	.Offline$ = "^FF0000Offline^000000";
+	end;
+	
+OnLoadPlugin:
 	end;
 }

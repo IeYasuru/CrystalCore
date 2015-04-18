@@ -33,6 +33,8 @@ Thumbs.db
 /Makefile.cache
 /map-server
 /mapcache
+/ServerLog.txt
+/ServerLauncher.ini
 
 # /plugins -- everything
 /plugins/
