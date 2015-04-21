@@ -3,7 +3,7 @@
 /*= Date: April 18, 2015 =*/
 /*= Revision: 1 =*/
 /*= External Functions:
-	void GMA_Pl_AutoLogon()
+	void GMA_Pl_AutoLogon(void)
 =*/
 
 -	script	GMA_AUTOLOGON::gmaplalc	-1,{
@@ -14,7 +14,7 @@ OnLoadPlugin:
 	$@gma_pl_menu$[getarraysize($@gma_pl_menu$)] = "Adjust logon settings";
 	end;
 }
-
+// ##TODO Rewrite switch below to use default to process instead of numerous one line case: statements
 function	script	GMA_Pl_AutoLogon	{
 	.@on$ = "^00FF00On^000000";
 	.@off$ = "^FF0000Off^000000";

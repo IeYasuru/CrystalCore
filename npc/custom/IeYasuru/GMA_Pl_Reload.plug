@@ -3,19 +3,19 @@
 /*= Date: April 18, 2015 =*/
 /*= Revision: 1 =*/
 /*= External Functions:
-	void GMA_Pl_Reload()
+	void GMA_Pl_GMReload(void)
 =*/
 
 -	script	GMA_RELOAD::gmaplr	-1,{
 	end;
 	
 OnLoadPlugin:
-	$@gma_gm$[getarraysize($@gma_gm$)] = "Reload";
+	$@gma_gm$[getarraysize($@gma_gm$)] = "GMReload";
 	$@gma_gm_menu$[getarraysize($@gma_gm_menu$)] = "Reload settings/plug-ins";
 	end;
 }
 
-function	script	GMA_Pl_Reload	{
+function	script	GMA_Pl_GMReload	{
 	donpcevent "gma::OnInit";
 	mes "";
 	mes "Settings reloaded.";

@@ -3,12 +3,13 @@
 /*= Date: April 15, 2015 =*/
 /*= Revision: 3 =*/
 /*= External Functions:
-	[GM] Reload: GMA_Pl_Reload - Plug-in Function: Gives any GM over .MinGM level to reload settings/plug-ins
+	[GM] Reload: GMA_Pl_GMReload - Plug-in Function: Gives any GM over .MinGM level to reload settings/plug-ins
 	[Pl] AutoLogon: GMA_Pl_AutoLogon - Plug-in Function: Lets players set auto-activating commands upon login, such as @main, @showexp, @showzeny, and @autoloot
+	[GM] AutoLogon: GMA_Pl_GMAuto - Plug in Function: Lets GMs set auto-activating commands upon login, such as @hide, @speed and @warp
 /*= Internal Functions:
 	void disp_gm_list(void); Pulls GM chars from database, formats and lists them to player
 	string gidtostr(int): Takes in group id (usually 0-99) and returns string name (Ex: 99 = Administrator)
-	void mad(...):  
+	void mad(...): 
 =*/
 
 prontera,162,185,4	script	GM Assistant::gma	971,{
