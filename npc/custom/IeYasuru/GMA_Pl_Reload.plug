@@ -1,0 +1,23 @@
+/*= GM Assistant GM Plug-in: [GM] Reload =*/
+/*= Coded by: IeYasuru =*/
+/*= Date: April 18, 2015 =*/
+/*= Revision: 1 =*/
+/*= External Functions:
+	void GMA_Pl_GMReload(void)
+=*/
+
+-	script	GMA_RELOAD::gmaplr	-1,{
+	end;
+	
+OnLoadPlugin:
+	$@gma_gm$[getarraysize($@gma_gm$)] = "GMReload";
+	$@gma_gm_menu$[getarraysize($@gma_gm_menu$)] = "Reload settings/plug-ins";
+	end;
+}
+
+function	script	GMA_Pl_GMReload	{
+	donpcevent "gma::OnInit";
+	mes "";
+	mes "Settings reloaded.";
+	close;
+}

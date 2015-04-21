@@ -1,0 +1,70 @@
+/*= GM Assistant GM Plug-in: [GM] AutoLogon =*/
+/*= Coded by: IeYasuru =*/
+/*= Date: April 21, 2015 =*/
+/*= Revision: 1 =*/
+/*= External Functions:
+	void GMA_Pl_GMAutoLogon(void)
+=*/
+
+-	script	GMA_GMAUTO::gmagma	-1,{
+	end;
+	
+OnLoadPlugin:
+	$@gma_gm$[getarraysize($@gma_gm$)] = "Adjust GM Logon settings";
+	$@gma_gm_menu$[getarraysize($@gma_gm_menu$)] = "GMAuto";
+	end;
+}
+
+function	script	GMA_Pl_GMAuto	{
+	.@on$ = "^00FF00On^000000";
+	.@off$ = "^FF0000Off^000000";
+
+	while(1) {
+		.@com$[0] = "Who -  "+ ((#gm_flag&1) ? "^00FF00"+ #gm_who +"^000000" : .@off$);
+		.@com$[1] = "Hide -  "+ ((#gm_flag&2) ? .@on$ : .@off$);
+		.@com$[2] = "Speed - "+ ((#gm_flag&4) ? "^00FF00"+ #gm_speed +"^000000" : .@off$);
+		.@com$[3] = "Warp - "+ ((#gm_flag&8) ? "^00FF00"+ #gm_warp$ +"^000000" : .@off$);
+		switch(prompt(implode(.@com$,":") +":Close")) {
+			case 1: // Who(1-3)
+				switch(select("1:2:3:Off")) {
+					case 4:
+						#gm_flag ^= 1;
+						break;
+						
+					default:
+						#gm_who = @menu;
+						if(!(#gm_flag&1))
+							#gm_flag ^= 1;
+						break;
+				}
+				break;
+			
+			case 2: // Hide
+				#gm_flag ^= 2;
+				break;
+			
+			case 3: // Speed
+				#gm_flag ^= 4;
+				break;
+			
+			case 4: // Warp
+				input .@temp$;
+				if(!getstrlen(.@temp$) && #gm_flag&8) {
+					#gm_flag ^= 8;
+					break;
+				}
+				if!(#gm_flag&8))
+					#gm_flag ^= 8;
+				break;
+			
+			case 255: // Cancel button
+				mes getvariableofnpc(.npc$,"gma");
+			default: // Close or any option without a 'case' above.
+				if(@menu != 255)
+					mes " ";
+				mes "Please come again."
+				close;
+		}
+	}
+	return;
+}

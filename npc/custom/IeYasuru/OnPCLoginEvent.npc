@@ -1,0 +1,40 @@
+/*= OnPCLoginEvent Handler =*/
+/*= Coded by: IeYasuru =*/
+/*= Date: April 19, 2015 =*/
+/*= Revision: 1 =*/
+/*= External Functions:
+	None
+=*/
+
+-	script	LoginEvent::logev	-1,{
+	end;
+	
+OnPCLoginEvent:
+	.@rid = getcharid(3);
+	if(getgmlevel()) {
+		for(.@i = 0; .@i < getarraysize(.GM_Flags$); .@i++) {
+			if(#gm_flag&(1<<.@i))
+				atcommand .GM_Flags$[.@i]+((.@i==1)?#gm_who:((.@i==3)?"0":((.@i==4)?" "+#gm_warp$:"")));
+		}
+	}
+	for(.@i = 0; .@i < getarraysize(.Pl_Flags$); .@i++) {
+		if(#pl_flag&(1<<.@i))
+			atcommand .Pl_Flags$[.@i]+((.@i==1)?" "+#pl_aloot:"");
+	}
+	if(#gm_logon && getgmlevel() && !(#gm_flag&2))
+		announce ((getgmlevel()>80)?"Administrator ":"Game Master ") + strcharinfo(0) +" has signed on.",BC_ALL,0x00FF66;
+	end;
+	
+OnInit:
+	.Pl_Flags$[0] = "@main on";
+	.Pl_Flags$[1] = "@autoloot";
+	.Pl_Flags$[2] = "@showexp";
+	.Pl_Flags$[3] = "@showzeny";
+	
+	.GM_Flags$[0] = "@who";
+	.GM_Flags$[1] = "@hide";
+	.GM_Flags$[2] = "@speed";
+	.GM_Flags$[3] = "@warp";
+	end;
+	}
+	
