@@ -22,7 +22,7 @@ OnPCLoginEvent:
 			atcommand .Pl_Flags$[.@i]+((.@i==1)?" "+#pl_aloot:"");
 	}
 	if(#gm_logon && getgmlevel() && !(#gm_flag&2))
-		announce ((getgmlevel()>80)?"Administrator ":"Game Master ") + strcharinfo(0) +" has signed on.",BC_ALL,0x00FF66;
+		announce ((getgmlevel()>80)?"Administrator ":"Game Master ") + strcharinfo(0) +" has signed on.",bc_all,0x00FF66;
 	end;
 	
 OnInit:
@@ -36,5 +36,5 @@ OnInit:
 	.GM_Flags$[2] = "@speed";
 	.GM_Flags$[3] = "@warp";
 	end;
-	}
+}
 	
