@@ -11,11 +11,12 @@
 /*= DS Organizer =*/
 -	script	Ringmaster::DSORG	-1,{
 	.npc$ = "[Devil's Square Ringmaster]";
-	if(getgmlevel() >= 60) callsub GM_Menu;
+	if(getgmlevel() >= getvariableofnpc(.MinGM,"gma"))
+		callsub GM_Menu;
 	
 	mes .npc$;
 	mes "Welcome to our special event!";
-	mes "For only ^0000FF200,000z^000000 you can challenge this wonderful ring of trials and tribulationa!";
+	mes "For only ^0000FF200,000z^000000 you can challenge this wonderful ring of trials and tribulations!";
 	next;
 	while(1)
 	{
@@ -27,13 +28,13 @@
 			case 1:
 				if(!$@DS_Open)
 				{
-					mes "I'm sorry, but the Devil's Square is not currwntly open.";
+					mes "I'm sorry, but the Devil's Square is not currently open.";
 					mes "Please try back later.";
 					close;
 				}
 				if(BaseLevel < 150 || Zeny < 200000)
 				{
-					mes "I'm sorry, but you are either too low leveled or don't have the required amount of zeny.";
+					mes "I'm sorry, but you are either too low levelled or don't have the required amount of zeny.";
 					close;
 				}
 				if(getmapusers("ordeal_1-1") >= 10)
@@ -55,7 +56,7 @@
 				next;
 				mes .npc$;
 				mes "Devil's Square is a horde mode event consisting of 10 rounds.";
-				mes "The rounds start off eaay vut get progressivly harder.";
+				mes "The rounds start off easy but get progressively harder.";
 				mes "The final round consists of a single MVP mob.";
 				next;
 				mes .npc$;
@@ -83,7 +84,7 @@ GM_Menu:
 ////////////////////////////////////////
 
 /*= DS Escapist =*/
--	script	Eacape Artist::DSEXIT	-1,{
+-	script	Escape Artist::DSEXIT	-1,{
 	mes "[Escape Artist]";
 	mes "Wow, I can't believe you survived. You must be pretty strong.";
 	mes "I'm going to have a chat with my boss. He can't keep charging people to risk their life.";
@@ -103,7 +104,7 @@ ordeal_1-1,0,0,0	script	DS_Event::DSMAIN	-1,{
 
 	function DS_CheckDup;
 	
-OnInIt:
+OnInit:
 	disablenpc "DSEXIT";
 	$@DS_Open = 0;
 	setarray $@DS1[0],1002,1113,1005,1010,1090,3604,3603,3602,3601,1076,1015,1094,1025;

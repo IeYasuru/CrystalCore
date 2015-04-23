@@ -27,10 +27,10 @@ prontera,162,185,4	script	GM Assistant::gma	971,{
 		.@sel = select(implode($@gma_gm_menu$,":") +":Close")-1;
 	else
 		.@sel = select(implode($@gma_pl_menu$,":") +":Close")-1;
-	.@func$ = "GMA_Pl_"+ getd("$@gma_"+ ((getgmlevel()) ? "gm" : "pl") +"$["+ .@sel +"]");
+	.@func$ = "GMA_Pl_"+ getd("$@gma_"+ ((getgmlevel()) ? "gm" : "pl") +"$["+ .@sel +"]"); // Set Function name to use with callfunc() below
 	if(.@sel == getarraysize(getd("$@gma_"+ ((getgmlevel()) ? "gm$" : "pl$"))))
 		close;
-	if(is_function(.@func$))
+	if(is_function(.@func$)) // Make sure the function we wanna call actually exists
 		callfunc(.@func$);
 	else {
 		next;
@@ -38,12 +38,12 @@ prontera,162,185,4	script	GM Assistant::gma	971,{
 		mes "I'm sorry,  that feature doesn't exist yet. Please report this to a GM.";
 		close;
 	}
-	if(playerattached())
+	if(playerattached()) // Just in case a function returns here instead of stopping execution
 		close;
 	else
 		end;
 
-	function disp_gm_list {
+	function disp_gm_list { // First pull all GM accounts and chars from the database
 		if(!(query_sql("select login.account_id,`char`.name,`char`.online,login.group_id from `char` inner join login on `char`.account_id = login.account_id where login.group_id >= "+ .MinGM +" order by login.account_id,`char`.char_id asc",.@aid,.@name$,.@online,.@gid))) {
 			mes "There was a problem fetching GMs from the database. Please report this.";
 			if(!$@debug_logged) {
@@ -53,19 +53,19 @@ prontera,162,185,4	script	GM Assistant::gma	971,{
 			close;
 		}
 		for(.@i = 0; .@i < getarraysize(.@aid); .@i++) {
-			if(.@last == .@aid[.@i])
+			if(.@last == .@aid[.@i]) // If we already dealth with this account id, skip ahead till we find the next one.
 				continue;
-			.@gm$[.@i] = .@name$[.@i];
-			.@gmo[.@i] = .@online[.@i];
-			.@gml[.@i] = .@gid[.@i];
+			.@gm$[getarraysize(.@gm$)] = .@name$[.@i];
+			.@gmo[getarraysize(.@gmo)] = .@online[.@i];
+			.@gml[getarraysize(.@gml)] = .@gid[.@i];
 			.@last = .@aid[.@i];
 		}
-		for(.@i = 0; .@i < getarraysize(.@gm$); .@i++)
+		for(.@i = 0; .@i < getarraysize(.@gm$); .@i++) // Output GMs, both online and off
 			mes gidtostr(.@gml[.@i]) +": "+ .@gm$[.@i] +" - "+ ((.@gmo[.@i]) ? .Online$ : .Offline$);
 		return;
 	}
 	function gidtostr {
-		switch(getarg(0)) {
+		switch(getarg(0)) { // Returns string based on GM level passed
 			case 99: return "[^FF0000Admin^000000]";
 			case 80: return "[^FF00FFHead GM^000000]";
 			case 60: return "[^0000FFGM^000000]";
@@ -81,7 +81,7 @@ prontera,162,185,4	script	GM Assistant::gma	971,{
 OnInit:
 	.npc$ = "[Administrative Assistant]";
 	mad("$@gma_pl$","$@gma_gm$","$@gma_gm_menu$","$@gma_pl_menu$");	// Explicitly clear out arrays to make sure all plug-ins are loaded fresh.
-	donpcevent "::OnLoadPlugin";
+	donpcevent "::OnLoadPlugin"; // Call all "OnLoadPlugin" events in all scripts
 	.MinGM = 80; // Minimum GM level to access GM plug-ins
 	.Online$ = "^00FF00Online^000000";
 	.Offline$ = "^FF0000Offline^000000";
