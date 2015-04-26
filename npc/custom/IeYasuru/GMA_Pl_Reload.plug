@@ -10,12 +10,24 @@
 	end;
 	
 OnLoadPlugin:
-	$@gma_gm$[getarraysize($@gma_gm$)] = "GMReload";
+	$@gma_gm$[getarraysize($@gma_gm$)] = "Reload";
 	$@gma_gm_menu$[getarraysize($@gma_gm_menu$)] = "Reload settings/plug-ins";
 	end;
 }
 
-function	script	GMA_Pl_GMReload	{
+function	script	GMA_Pl_Reload	{
+	/* for(.@i = 0; .@i < getarraysize($@gma_gm$); .@i++) {
+		if($@gma_gm$[.@i] == "Reload")
+			continue;
+		atcommand "@unloadnpcfile npc/custom/IeYasuru/GMA_Pl_"+ $@gma_gm$[.@i] +".plug";
+		dispbottom "GMA_Pl_"+ $@gma_gm$[.@i] +".plug";
+		atcommand "@loadnpc npc/custom/IeYasuru/GMA_Pl_"+ $@gma_gm$[.@i] +".plug";
+	}
+	for(.@i = 0; .@i < getarraysize($@gma_pl$); .@i++) {
+		atcommand "@unloadnpcfile npc/custom/IeYasuru/GMA_Pl_"+ $@gma_pl$[.@i] +".plug";
+		dispbottom "GMA_Pl_"+ $@gma_pl$[.@i] +".plug";
+		atcommand "@loadnpc npc/custom/IeYasuru/GMA_Pl_"+ $@gma_pl$[.@i] +".plug";
+	} */
 	donpcevent "gma::OnInit";
 	mes "";
 	mes "Settings reloaded.";

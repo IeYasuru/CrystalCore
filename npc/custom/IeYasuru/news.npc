@@ -1,0 +1,201 @@
+/*= Gm News System =*/
+/*= Coded by: IeYasuru =*/
+/*= Date: April 25, 2015 =*/
+/*= Revision: 3 =*/
+/*= External Functions: =*/
+//	None
+/*= Internal Functions =*/
+//	None
+
+/*=
+	This is a recoding of the Server News script posted by Aeromesi
+	(http://hercules.ws/board/topic/9256-server-news-system-display-your-server-news-to-your-players/?mode=show)
+	As mentioned in his credits, I'm the original author, and I saw a request on the thread,
+	so I decided to recode the entire script and add in the topics for posts (thanks for the 
+	suggestion Max) and also just clean up the code in general. The old code was ugly =P
+	I'd also like to thank Garr for the updated SQL table (although I'm not exactly sure
+	what he updated, it's been awhile since I've seen the old one lol) but I just added in
+	the `topic` field. Anyway thanks to his contributions and Aeromesi for converting this
+	to Hercules standards.
+=*/
+
+// NOTE:
+// I have added in some code into the OnInit to A) create the gm_news table in your db
+// if it doesn't already exist, then it alters that table and adds in the `topic` column
+// after `gm_poster` so the new colum format is `post_id`,`gm_poster`,`topic`,`message`
+// Topic will default as 'Unknown' for any post that didn't originally have one (since
+// we're just altering the table structure, all your previous posts are kept intact)
+// I'm also adding in a new option in the script to modify existing posts, so you may
+// go back and modify old posts and change their topics to the correct setting if you 
+// so wish. This way you don't have to manually edit your database; the script will
+// do it for you automagically.
+
+prontera,150,183,6	script	Reporter::gmnews	725,{
+
+	function checkPostID;
+	
+OnNewsEvent:
+	if(getgmlevel() >= .MinGM) {
+		mes .npc$;
+		mes "Please select an option.";
+		switch(select("Add News:Delete old news:Modify existing news:Close")) {
+			case 1:
+				mes "Please enter a topic for your message.";
+				.@sel = select(implode(.Topics$,":"));
+				next;
+				mes .npc$;
+				mes "Please input a message.";
+				input .@mes$;
+				if(getstrlen(.@mes$) > 50) {
+					mes "I'm sorry, but that message is too long. Please use a shorter message.";
+					callsub OnNewsEvent;
+				}
+				next;
+				mes .npc$;
+				mes "Author: ^0000ff"+ strcharinfo(0);
+				mes "^000000Topic: ^0000ff"+ .Topics$[.@sel-1];
+				mes "^000000Message: ^000000"+ .@mes$;
+				mes "^000000Is this right?";
+				if(select("Yes:No")-1) {
+					mes "Would you like to try again?";
+					if(select("Yes:No")-1)
+						close;
+					else
+						callsub OnNewsEvent;
+				}
+				next;
+				mes .npc$;
+				mes "I'll make sure this messages gets out as soon as possible.";
+				.@author$ = escape_sql(strcharinfo(0));
+				.@mes$ = escape_sql(.@mes$);
+				.@topic$ = escape_sql(.Topics$[.@sel-1]);
+				query_sql("insert into `gm_news` (gm_poster,topic,message) values ('"+ .@author$ +"','"+ .@topic$ +"','"+ .@mes$ +"')");
+				announce "Latest News: "+ .@topic$ +": "+ .@mes$,0;
+				mes "Message reported.";
+				close;
+				
+			case 2:
+				next;
+				mes .npc$;
+				callsub GetNewsList;
+				query_sql("select `post_id` from `gm_news`",.@dummy);
+				if(!getarraysize(.@dummy)) {
+					mes "There are no posts!";
+					next;
+					callsub OnNewsEvent;
+				}
+				input .@row,1,.@dummy[getarraysize(.@dummy)-1];
+				checkPostID(.@row);
+				next;
+				mes .npc$;
+				mes "Would you like to delete this post?";
+				query_sql("select * from `gm_news` where `post_id` = '"+ .@row +"'", .@tempid, .@tempgm$, .@temptopic$, .@tempmes$);
+				mes .@tempid +": "+ .@temptopic$;
+				mes "Author: "+ .@tempgm$;
+				mes .@tempmes$;
+				if(select("Yes:No")-1)
+					callsub OnNewsEvent;
+				query_sql("delete from `gm_news` where `post_id` = '"+ .@row +"'");
+				mes "Post deleted.";
+				close;
+				
+			case 3:
+				next;
+				mes .npc$;
+				callsub GetNewsList;
+				query_sql("select `post_id` from `gm_news`",.@dummy);
+				if(!getarraysize(.@dummy)) {
+					mes "There are no posts!";
+					next;
+					callsub OnNewsEvent;
+				}
+				input .@row,1,.@dummy[getarraysize(.@dummy)-1];
+				checkPostID(.@row);
+				next;
+				mes .npc$;
+				mes "Would you like to modify this post?";
+				query_sql("select * from `gm_news` where `post_id` = '"+ .@row +"'", .@tempid, .@tempgm$, .@temptopic$, .@tempmes$);
+				mes .@tempid +": "+ .@temptopic$;
+				mes "Author: "+ .@tempgm$;
+				mes .@tempmes$;
+				if(select("Yes:No")-1)
+					callsub OnNewsEvent;
+				next;
+				mes .npc$;
+				mes "What would you like to change?";
+				.@mod = select("Topic:Message");
+				mes "Please tell me what to update the "+ ((2-.@mod) ? "topic":"message") +" to.";
+				if(.@mod == 1)
+					.@temp$ = .Topics$[select(implode(.Topics$,":"))-1];
+				else if(.@mod == 2)
+					input .@temp$,1,50;
+				next;
+				mes .npc$;
+				mes "Would you like to update the "+ ((2-.@mod) ? "topic":"message") +"?";
+				mes .@temp$;
+				if(select("Yes:No")-1)
+					callsub OnNewsEvent;
+				query_sql("update `gm_news` set `"+ ((2-.@mod) ? "topic":"message") +"` = '"+ escape_sql(.@temp$) +"' where `post_id` = '"+ .@row +"'");
+				mes "Updated.";
+				close;
+				
+			case 4:
+				close;
+		}
+	}
+	
+	function checkPostID {
+		query_sql("select `post_id` from `gm_news`",.@dummy);
+		for(.@i = 0; .@i < getarraysize(.@dummy); .@i++) {
+			if(getarg(0) == .@dummy[.@i])
+				return getarg(0);
+		}
+		mes "I'm sorry, that post doesn't exist.";
+		callsub OnNewsEvent;
+	}
+	
+OnPCLoginEvent:
+	.@c = query_sql("select * from `gm_news`",.@id,.@gm$,.@topic$,.@mes$);
+	if(!getarraysize(.@id))
+		end;
+	if((!.@c) || (#LatestNews == .@id[getarraysize(.@id)-1]))
+		end;
+	#LatestNews = .@id[getarraysize(.@id)-1];
+	mes .npc$;
+	while(.@i < .@c) {
+		mes .@id[.@i] +": "+ .@topic$[.@i];
+		mes "Author: "+ .@gm$[.@i];
+		mes .@mes$[.@i];
+		mes " ";
+		++.@i;
+	}
+	close;
+
+GetNewsList:
+	.@c = query_sql("select * from `gm_news`",.@id,.@gm$,.@topic$,.@mes$);
+	if(!.@c) {
+		mes "There are no posts yet!";
+		next;
+		callsub OnNewsEvent;
+	}
+	.@i = 0;
+	while(.@i < .@c) {
+		mes .@id[.@i] +": "+ .@topic$[.@i];
+		mes "Author: "+ .@gm$[.@i];
+		mes .@mes$[.@i];
+		mes " ";
+		++.@i;
+	}			
+	return;
+
+OnInit:
+	.npc$ = "[News Reporter]";
+	.MinGM = 99;
+	explode(.Topics$,"[General],[Patch],[Maintenance],[Report],[Misc]",",");
+	if(!$DB_UPDATED) {
+		query_sql("create table if not exists `gm_news` ( `post_id` int(11) unsigned not null auto_increment, `gm_poster` char(50) default null, `message` char(50) default null, primary key (`post_id`)) engine=InnoDB");
+		query_sql("alter table `gm_news` add `topic` char(50) default 'Unknown' after `gm_poster`");
+		$DB_UPDATED = 1;
+	}
+	end;
+}

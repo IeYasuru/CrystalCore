@@ -10,12 +10,12 @@
 	end;
 	
 OnLoadPlugin:
-	$@gma_pl$[getarraysize($@gma_pl$)] = "AutoLogon";
+	$@gma_pl$[getarraysize($@gma_pl$)] = "PLAuto";
 	$@gma_pl_menu$[getarraysize($@gma_pl_menu$)] = "Adjust logon settings";
 	end;
 }
 // ##TODO Rewrite switch below to use default to process instead of numerous one line case: statements
-function	script	GMA_Pl_AutoLogon	{
+function	script	GMA_Pl_PLAuto	{
 	.@on$ = "^00FF00On^000000";
 	.@off$ = "^FF0000Off^000000";
 

@@ -10,12 +10,14 @@
 	end;
 	
 OnLoadPlugin:
-	$@gma_gm$[getarraysize($@gma_gm$)] = "Adjust GM Logon settings";
-	$@gma_gm_menu$[getarraysize($@gma_gm_menu$)] = "GMAuto";
+	$@gma_gm$[getarraysize($@gma_gm$)] = "GMAuto";
+	$@gma_gm_menu$[getarraysize($@gma_gm_menu$)] = "Adjust GM Logon settings";
 	end;
 }
 
 function	script	GMA_Pl_GMAuto	{
+	function checkValidity;
+	
 	.@on$ = "^00FF00On^000000";
 	.@off$ = "^FF0000Off^000000";
 
@@ -47,9 +49,10 @@ function	script	GMA_Pl_GMAuto	{
 				#gm_flag ^= 4;
 				break;
 			
-			case 4: // Warp
-				input .@temp$;
-				if(!getstrlen(.@temp$) && #gm_flag&8) {
+			case 4: // Warp ##TODO add in map checking code to ensure input is in format "<map> <x> <y>"
+				input #gm_warp$;
+				#gm_warp$ = checkValidity(#gm_warp$);
+				if((#gm_warp$ == "off" || #gm_warp$ == "OFF" || #gm_warp$ == "Off") && #gm_flag&8) {
 					#gm_flag ^= 8;
 					break;
 				}
@@ -67,4 +70,8 @@ function	script	GMA_Pl_GMAuto	{
 		}
 	}
 	return;
+	
+	function checkValidity {
+		return getarg(0);
+	}
 }
