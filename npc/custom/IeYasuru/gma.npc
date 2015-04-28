@@ -9,7 +9,7 @@
 /*= Internal Functions:
 	void disp_gm_list(void); Pulls GM chars from database, formats and lists them to player
 	string gidtostr(int): Takes in group id (usually 0-99) and returns string name (Ex: 99 = Administrator)
-	void mad(...): 
+	void mad(...): Deletes multiple arrays passed in one statement
 =*/
 
 prontera,162,185,4	script	GM Assistant::gma	971,{
@@ -35,7 +35,7 @@ prontera,162,185,4	script	GM Assistant::gma	971,{
 	else {
 		next;
 		mes .npc$;
-		mes "I'm sorry,  that feature doesn't exist yet. Please report this to a GM.";
+		mes "I'm sorry, that feature doesn't exist yet. Please report this to a GM.";
 		close;
 	}
 	if(playerattached()) // Just in case a function returns here instead of stopping execution
