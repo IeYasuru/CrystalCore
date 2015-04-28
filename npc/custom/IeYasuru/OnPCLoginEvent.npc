@@ -10,6 +10,8 @@
 	end;
 	
 OnPCLoginEvent:
+	if(BaseLevel == 1 && JobLevel == 1 && Job == Job_Novice)
+		donpcevent "steller#master::OnNewChar";
 	.@rid = getcharid(3);
 	if(getgmlevel()) {
 		for(.@i = 0; .@i < getarraysize(.GM_Flags$); .@i++) {
@@ -26,15 +28,8 @@ OnPCLoginEvent:
 	end;
 	
 OnInit:
-	.Pl_Flags$[0] = "@main on";
-	.Pl_Flags$[1] = "@autoloot";
-	.Pl_Flags$[2] = "@showexp";
-	.Pl_Flags$[3] = "@showzeny";
-	
-	.GM_Flags$[0] = "@who";
-	.GM_Flags$[1] = "@hide";
-	.GM_Flags$[2] = "@speed";
-	.GM_Flags$[3] = "@warp";
+	explode(.Pl_Flags$,"@main on,@autoloot,@showexp,@showzeny",",");
+	explode(.GM_Flags$,"@who,@hide,@speed,@warp",",");
 	end;
 }
 	
