@@ -23,7 +23,7 @@ OnPCLoginEvent:
 		if(#pl_flag&(1<<.@i))
 			atcommand .Pl_Flags$[.@i]+((.@i==1)?" "+#pl_aloot:"");
 	}
-	if(#gm_logon && getgmlevel() && !(#gm_flag&2))
+	if(#gm_flag&16 && getgmlevel() && !(#gm_flag&2))
 		announce ((getgmlevel()>80)?"Administrator ":"Game Master ") + strcharinfo(0) +" has signed on.",bc_all,0x00FF66;
 	end;
 	
