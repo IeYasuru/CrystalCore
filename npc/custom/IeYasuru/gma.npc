@@ -3,8 +3,8 @@
 /*= Date: April 15, 2015 =*/
 /*= Revision: 3 =*/
 /*= External Functions:
-	[GM] Reload: GMA_Pl_GMReload - Plug-in Function: Gives any GM over .MinGM level to reload settings/plug-ins
-	[Pl] AutoLogon: GMA_Pl_AutoLogon - Plug-in Function: Lets players set auto-activating commands upon login, such as @main, @showexp, @showzeny, and @autoloot
+	[GM] Reload: GMA_Pl_Reload - Plug-in Function: Gives any GM over .MinGM level to reload settings/plug-ins
+	[Pl] AutoLogon: GMA_Pl_PLAuto - Plug-in Function: Lets players set auto-activating commands upon login, such as @main, @showexp, @showzeny, and @autoloot
 	[GM] AutoLogon: GMA_Pl_GMAuto - Plug in Function: Lets GMs set auto-activating commands upon login, such as @hide, @speed and @warp
 /*= Internal Functions:
 	void disp_gm_list(void); Pulls GM chars from database, formats and lists them to player
@@ -44,7 +44,7 @@ prontera,162,185,4	script	GM Assistant::gma	971,{
 		end;
 
 	function disp_gm_list { // First pull all GM accounts and chars from the database
-		if(!(query_sql("select login.account_id,`char`.name,`char`.online,login.group_id from `char` inner join login on `char`.account_id = login.account_id where login.group_id >= "+ .MinGM +" order by login.account_id,`char`.char_id asc",.@aid,.@name$,.@online,.@gid))) {
+		if(!(query_sql("select login.account_id,`char`.name,`char`.online,login.group_id from `char` inner join login on `char`.account_id = login.account_id where login.group_id >= "+ .MinGM +" order by login.account_id,`char`.char_id,login.group_id asc",.@aid,.@name$,.@online,.@gid))) {
 			mes "There was a problem fetching GMs from the database. Please report this.";
 			if(!$@debug_logged) {
 				debugmes "Could not pull GMs from database!\nNPC: GM Assistant | Where: \'disp_gm_list\'";

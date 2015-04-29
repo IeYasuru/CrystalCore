@@ -10,8 +10,8 @@
 	end;
 	
 OnPCLoginEvent:
-	if(BaseLevel == 1 && JobLevel == 1 && Job == Job_Novice)
-		donpcevent "steller#master::OnNewChar";
+	if(BaseLevel == 1 && JobLevel == 1 && Job == Job_Novice && !StoryLogged)
+		donpcevent "stmaster::OnNewChar";
 	.@rid = getcharid(3);
 	if(getgmlevel()) {
 		for(.@i = 0; .@i < getarraysize(.GM_Flags$); .@i++) {

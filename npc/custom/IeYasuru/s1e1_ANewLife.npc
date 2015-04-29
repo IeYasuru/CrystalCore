@@ -1,0 +1,52 @@
+/*= Rotating Storyline =*/
+/*= Coded by: IeYasuru =*/
+/*= Date: April 28, 2015 =*/
+/*= Revision: 1 =*/
+/*= External Functions =*/
+// None
+/*= Internal Functions =*/
+// None
+
+-	script	steller#master::stmaster	-1,{
+	
+OnNewChar:
+	mes .noc$;
+	mes "Hello, "+ strcharinfo(0) +".";
+	mes "I see you're new here.";
+	next;
+	mes .npc$;
+	mes "If you're interested, you may embark on a fascinating tale of your own design that will guide you from your current infancy to adulthood.";
+	next;
+	mes .npc$;
+	mes "Alternatively, you may also forgo this delightful adventure and simply free play your own way, leveling and gathering gear.";
+	next;
+	mes .npc$;
+	mes "So what will you do? Will you follow the story or free play?";
+	switch(select("I'll play the story.:I'd rather free play.")) {
+		case 1:
+			next;
+			mes .npc$;
+			mes "Excellent! If you talk to the lovely woman standing near you, you can be underway!";
+			break;
+			
+		case 2:
+			next;
+			mes .npc$;
+			mes "Well that's too bad, but I will respect your wishes.";
+			mes "Please grant me one second while I enable Free Play on your character.";
+			next;
+			query_sql("update login set group_id = 1 where account_id = "+ getcharid(3));
+			// Set SavePoint to main town here
+			mes .npc$;
+			mes "If you would be so kind as to relog you'll find yourself in Prontera with extended @commands. Please enjoy your stay on CrystalCore.";
+			break;
+	}
+	StoryLogged = 1;
+	close;
+	
+OnInit:
+	.npc$ = "Narrator";
+	.MinGM = 80;
+	
+	end;
+}
